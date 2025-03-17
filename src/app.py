@@ -25,6 +25,48 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+@app.route('/add' , methods=['POST'])
+def add_member():
+    try:
+        data = request.get_json()
+        # print(data)
+        if data:
+            jackson_family.add_member(data)
+            return jsonify( data ) , 200
+        return jsonify({ "error" : "Invalid data"}), 400
+    except Exception :
+        return jsonify({"error": str(Exception)}), 500
+    
+@app.route('/member/<int:id>' , methods=['GET'])
+def get_member(id):
+    member = jackson_family.get_member(id)
+    if member:
+        return jsonify(member), 200 
+    else:
+        return jsonify({ "error": "Member not found"}), 404
+    
+@app.route('/delete/<int:id>' , methods=['DELETE'])
+def delete_member(id):
+    try:
+        member_delete = jackson_family.delete_member(id)
+        if member_delete:
+            return jsonify({ "done" : True}), 200
+        return jsonify({ "error" : "invalid data"})
+    except Exception:
+        return jsonify({ "error" : str(Exception)}), 500
+    
+@app.route('/update/<int:id>' , methods=['PUT'])
+def update_member(id):
+    try:
+        data = request.get_json()
+        data_update = jackson_family.update_member(id , data)
+        if data_update:
+            return jsonify(data_update), 200
+        return jsonify({ "error" : "invalid data"})
+    except Exception:
+        return jsonify({ "error" : str(Exception)}), 500
+
+
 @app.route('/members', methods=['GET'])
 def handle_hello():
 
